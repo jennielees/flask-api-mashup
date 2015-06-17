@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, jsonify
 from weather import get_weather
 from send_sms import send_sms
 from config import INSTA_CLIENT_ID
@@ -35,6 +35,19 @@ def get_city(state, city):
 def text_me(state, city):
     send_sms("You should visit {}, {}".format(city, state))
     return redirect(url_for('get_city', state=state, city=city))
+
+
+@app.route('/api/text/<state>/<city>')
+def api_text_me(state, city):
+    send_sms("You should visit {}, {}".format(city, state))
+    # TODO - Can you change the result from 'success' if the sms fails?
+    return jsonify({"result": "success"})
+
+
+@app.route('/api/photos/<latitude>/<longitude>')
+def api_photos(latitude, longitude):
+    photos = get_photos(latitude, longitude)
+    return photos
 
 
 if __name__=="__main__":
